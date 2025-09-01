@@ -3,35 +3,27 @@ import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Scanner;
 
-
-
         class Person {
         private String name;
         private int userId;
         private float liquid;
 
-        public String getName() {
-            return name;
+        public Person(String name, int userId, float initialLiquid){
+            this.name = name;
+            this.userId = userId;
+            this.liquid = initialLiquid;
         }
 
-        public void setName(String userName) {
-            this.name = userName;
-        }
+        public String getName() {
+                return name;
+            }
 
         public int getUserId(){
             return userId;
         }
 
-        public void setUserId(int id){
-            this.userId = id;
-        }
-
         public float getLiquid(){
             return liquid;
-        }
-
-        public void setLiquid(float liq){
-            this.liquid = liq;
         }
 
         public void deposit(float depositAmount){
@@ -54,20 +46,16 @@ import java.util.Scanner;
             }
         }
 
-        public void displayDetails(String uName, int uId, float uLiquid){
-            this.name = uName;
-            this.userId = uId;
-            this.liquid = uLiquid;
-
+        public void displayDetails(){
             System.out.println("---Client Details---");
-            System.out.println("Name: " + uName);
-            System.out.println("ID: " + uId);
-            System.out.println("Funds: " + uLiquid);
+            System.out.println("Name: " + name);
+            System.out.println("ID: " + userId);
+            System.out.println("Funds: " + liquid);
         }
     }
 
 public class Main {
-    private static Map<Integer, Person> person = new HashMap<>();
+    private static Map<Integer, Person> persons = new HashMap<>();
     private static Scanner sc = new Scanner(System.in);
     //private static int accountCounter = 1000;
 
@@ -92,6 +80,7 @@ public class Main {
                 case 5 -> displayAllAccounts();
                 case 6 -> {
                     System.out.println("Thank you!");
+                    return;
                 }
                 default -> System.out.println("Invalid!");
             }
@@ -100,51 +89,85 @@ public class Main {
 
 
     private static void createAccount() {
+        System.out.println("Enter name: ");
+        sc.nextLine();
+        String userInputName = sc.nextLine();
 
+        System.out.println("How much is your initial balance? ");
+        float userInputFund = 0.0f;
+        boolean validInputFund = false;
+
+        while(!validInputFund){
+            try{
+                userInputFund = sc.nextFloat();
+                validInputFund = true;
+            }catch(InputMismatchException e){
+                System.out.println("Invalid input.");
+                sc.nextLine();
+            }
+        }
+        System.out.println("Enter ID: ");
+        int userInputId = 0;
+        boolean validInputId = false;
+
+        while(!validInputId){
+            try{
+                userInputId = sc.nextInt();
+                validInputId = true;
+            }catch(InputMismatchException e){
+                System.out.println("Invalid input.");
+                sc.nextLine();
+            }
+        }
+        Person person = new Person(userInputName, userInputId, userInputFund);
+        persons.put(userInputId, person);
+        System.out.println("Created Account: " + userInputId);
     }
 
-
-    //Get User Name
-            System.out.println("Please enter your name: ");
-    String userInputName = sc.nextLine();
-            myObj.setName(userInputName); //Set User Name
-
-    //Get User ID
-    int userInputId = 0;
-    boolean validInputId = false;
-
-    //Numerical value checker
-            while(!validInputId)
-
-    {
-        System.out.println("Enter User ID: ");
-        try {
-            userInputId = sc.nextInt();
-            validInputId = true;
-        } catch (InputMismatchException e) {
-            System.out.println("Please enter numerical values only!");
-            sc.nextLine(); //clear invalid input
+    public static void depositFund(){
+        System.out.println("Enter Account Number: ");
+        int accNum = sc.nextInt();
+        if(persons.containsKey(accNum)){
+            System.out.println("Enter Amount to Deposit: ");
+            float amount = sc.nextFloat();
+            persons.get(accNum).deposit(amount);
+        }else{
+            System.out.println("Account is Invalid!");
         }
     }
-            myObj.setUserId(userInputId); //Set User ID
 
-    //Get User Funds
-    float userInputFund = 0.0f;
-    boolean validInputFund = false;
-
-            while(!validInputFund)
-
-    {
-        System.out.println("Enter initial funds: ");
-        try {
-            userInputFund = sc.nextFloat();
-            validInputFund = true;
-        } catch (InputMismatchException e) {
-            System.out.println("Please enter numerical values only!");
-            sc.nextLine();
+    public static void withdrawFund(){
+        System.out.println("Enter Account Number: ");
+        int accNum = sc.nextInt();
+        if(persons.containsKey(accNum)){
+            System.out.println("Enter Amount to Withdraw: ");
+            float amount = sc.nextFloat();
+            persons.get(accNum).withdraw(amount);
+        }else{
+            System.out.println("Account is Invalid!");
         }
     }
-            myObj.setLiquid(userInputFund); //Set User Funds
+
+    public static void checkBalance(){
+        System.out.println("Enter Account Number: ");
+        int accNum = sc.nextInt();
+        if(persons.containsKey(accNum)){
+            Person per = persons.get(accNum);
+            System.out.println("Hi " + per.getName() + ", your remaining balance is " + per.getLiquid());
+        }else{
+            System.out.println("Invalid Account Number!");
+        }
+    }
+
+    public static void displayAllAccounts(){
+        if(persons.isEmpty()){
+            System.out.println("No Account Found!");
+        }else{
+            for(Person per : persons.values()){
+                per.displayDetails();
+            }
+        }
+    }
 }
 
 
